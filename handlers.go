@@ -4148,10 +4148,11 @@ func openApiMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 type collectionListQueryRes struct {
-	ContID uint
-	Cid    util.DbCID
-	Size   int64
-	Path   *string
+	ContID   uint
+	Cid      util.DbCID
+	Size     int64
+	Path     *string
+	Filename *string
 }
 
 type collectionListResponse struct {
@@ -4189,7 +4190,7 @@ func (s *Server) handleColfsListDir(c echo.Context, u *User) error {
 	if err := s.DB.Model(CollectionRef{}).
 		Joins("left join contents on contents.id = collection_refs.content").
 		Where("collection = ?", col.ID).
-		Select("contents.id as cont_id, contents.cid as cid, path, size").
+		Select("contents.id as cont_id, contents.cid as cid, contents.name as filename, path, size").
 		Scan(&refs).Error; err != nil {
 		return err
 	}
@@ -4215,7 +4216,7 @@ func (s *Server) handleColfsListDir(c echo.Context, u *User) error {
 
 		if !strings.Contains(relp, "/") {
 			out = append(out, collectionListResponse{
-				Name:   filepath.Base(relp),
+				Name:   *r.Filename,
 				Dir:    false,
 				Size:   r.Size,
 				ContID: r.ContID,
