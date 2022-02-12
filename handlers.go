@@ -4221,7 +4221,7 @@ func (s *Server) handleColfsListDir(c echo.Context, u *User) error {
 				Dir:    false,
 				Size:   r.Size,
 				ContID: r.ContID,
-				Cid:    &r.Cid,
+				Cid:    &util.DbCID{r.Cid.CID},
 			})
 			continue
 		}
